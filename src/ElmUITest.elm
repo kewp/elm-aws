@@ -1,29 +1,33 @@
 module ElmUITest exposing (main)
 
 import Browser
-
 import Element exposing (..)
-import Element.Font as Font
-import Element.Region as Region
-import Element.Border as Border
-import Element.Input as Input
 import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Element.Input as Input
+import Element.Region as Region
 import Html.Attributes as HA
-import Html.Attributes
+
 
 type alias Model =
     { toggle : Bool }
+
 
 initialModel : Model
 initialModel =
     { toggle = False }
 
+
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Change _ -> model
+        Change _ ->
+            model
+
         Toggle ->
             { model | toggle = not model.toggle }
+
 
 renderTitle =
     paragraph
@@ -52,40 +56,42 @@ renderPage model =
 
 
 leftMenu =
-    row [
-        padding 20
-    ]
-    [
-    column
-        [ 
-         height fill
-        , spacing 20
-        , padding 20
-        , Border.width 10
-        , Border.rounded 6
-        , Border.solid
-        , Border.color <| Element.rgb 120 120 120
-        , Border.shadow { color = Element.rgba 0 0 0 0.5, offset = ( 0, 0 ), blur = 3, size = 1 }
+    row
+        [ padding 20
         ]
-        [ text "Home"
-        , text "Photos"
-        , text "Videos"
-        , text "Contacts"
-        , paragraph []
-            [ el [ Font.italic ] (text "N")
-            , text "Subs!"
+        [ column
+            [ height fill
+            , spacing 20
+            , padding 20
+            , Border.width 10
+            , Border.rounded 6
+            , Border.solid
+            , Border.color <| Element.rgb 120 120 120
+            , Border.shadow { color = Element.rgba 0 0 0 0.5, offset = ( 0, 0 ), blur = 3, size = 1 }
             ]
-        , text "About"
+            [ text "Home"
+            , text "Photos"
+            , text "Videos"
+            , text "Contacts"
+            , paragraph []
+                [ el [ Font.italic ] (text "N")
+                , text "Subs!"
+                ]
+            , text "About"
+            ]
         ]
-    ]
 
-type Msg = Change String | Toggle
+
+type Msg
+    = Change String
+    | Toggle
+
 
 defaultCheckbox : Bool -> Element msg
 defaultCheckbox checked =
     Element.el
         [ --Internal.htmlClass "focusable"
-        Element.width
+          Element.width
             (Element.px 14)
         , Element.height (Element.px 14)
         , Font.color white
@@ -96,6 +102,7 @@ defaultCheckbox checked =
         , Border.color <|
             if checked then
                 Element.rgb (59 / 255) (153 / 255) (252 / 255)
+
             else
                 Element.rgb (211 / 255) (211 / 255) (211 / 255)
         , Border.shadow
@@ -105,17 +112,20 @@ defaultCheckbox checked =
             , color =
                 if checked then
                     Element.rgba (238 / 255) (238 / 255) (238 / 255) 0
+
                 else
                     Element.rgb (238 / 255) (238 / 255) (238 / 255)
             }
         , Background.color <|
             if checked then
                 Element.rgb (59 / 255) (153 / 255) (252 / 255)
+
             else
                 white
         , Border.width <|
             if checked then
                 0
+
             else
                 1
         , Element.inFront
@@ -139,6 +149,7 @@ defaultCheckbox checked =
             )
         ]
         Element.none
+
 
 toggleCheckboxWidget : { offColor : Color, onColor : Color, sliderColor : Color, toggleWidth : Int, toggleHeight : Int } -> Bool -> Element msg
 toggleCheckboxWidget { offColor, onColor, sliderColor, toggleWidth, toggleHeight } checked =
@@ -187,6 +198,7 @@ toggleCheckboxWidget { offColor, onColor, sliderColor, toggleWidth, toggleHeight
     <|
         text ""
 
+
 lightGrey : Color
 lightGrey =
     rgb255 187 187 187
@@ -200,7 +212,7 @@ green =
 white : Color
 white =
     rgb255 255 255 255
-    
+
 
 myTooltip : String -> Element msg
 myTooltip str =
@@ -215,41 +227,45 @@ myTooltip str =
         ]
         (text str)
 
+
 pageContent model =
     column
-        [ 
-            width fill,
-            height fill
+        [ width fill
+        , height fill
         ]
-        [ column [centerX, centerY] [
-            paragraph [] [el [] (text "Latest stuff lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum....")],
-            paragraph [] [Input.text [] { 
-                onChange = Change, 
-                text = "hello", 
-                placeholder = Just
-                    (Input.placeholder []
-                        (text "type some text here and press enter")
-                    ), 
-                label=Input.labelAbove [] (text "Hello")}],
-            Input.checkbox [] <|
-            { onChange = always Toggle
-            , label = Input.labelHidden "Activer/Désactiver le partage"
-            , checked = model.toggle
-            , icon =
-                toggleCheckboxWidget
-                    { offColor = lightGrey
-                    , onColor = green
-                    , sliderColor = white
-                    , toggleWidth = 60
-                    , toggleHeight = 28
+        [ column [ centerX, centerY ]
+            [ paragraph [] [ el [] (text "Latest stuff lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum....") ]
+            , paragraph []
+                [ Input.text []
+                    { onChange = Change
+                    , text = "hello"
+                    , placeholder =
+                        Just
+                            (Input.placeholder []
+                                (text "type some text here and press enter")
+                            )
+                    , label = Input.labelAbove [] (text "Hello")
                     }
-            },
-            defaultCheckbox True,
-            el [ tooltip above (myTooltip "foo") ] (text "foo")
+                ]
+            , Input.checkbox [] <|
+                { onChange = always Toggle
+                , label = Input.labelHidden "Activer/Désactiver le partage"
+                , checked = model.toggle
+                , icon =
+                    toggleCheckboxWidget
+                        { offColor = lightGrey
+                        , onColor = green
+                        , sliderColor = white
+                        , toggleWidth = 60
+                        , toggleHeight = 28
+                        }
+                }
+            , defaultCheckbox True
+            , el [ tooltip above (myTooltip "foo") ] (text "foo")
             , el [ tooltip below (myTooltip "bar") ] (text "bar")
+            ]
         ]
-        
-        ]
+
 
 tooltip : (Element msg -> Attribute msg) -> Element Never -> Attribute msg
 tooltip usher tooltip_ =
@@ -260,10 +276,11 @@ tooltip usher tooltip_ =
             , transparent True
             , mouseOver [ transparent False ]
             , (usher << Element.map never) <|
-                el [ htmlAttribute (Html.Attributes.style "pointerEvents" "none") ]
+                el [ htmlAttribute (HA.style "pointerEvents" "none") ]
                     tooltip_
             ]
             none
+
 
 view model =
     layout [] <|
@@ -271,12 +288,12 @@ view model =
             [ renderTitle
             , renderPage model
             ]
-    
+
 
 main : Program () Model Msg
-main = Browser.sandbox
+main =
+    Browser.sandbox
         { init = initialModel
         , view = view
         , update = update
         }
-    
