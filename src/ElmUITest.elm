@@ -14,6 +14,10 @@ type alias Model =
     { toggle : Bool }
 
 
+style name value =
+    Element.htmlAttribute <| HA.style name value
+
+
 initialModel : Model
 initialModel =
     { toggle = False }
@@ -22,7 +26,13 @@ initialModel =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
+        ChangePassword _ ->
+            model
+
         Change _ ->
+            model
+
+        ClickMsg ->
             model
 
         Toggle ->
@@ -84,14 +94,16 @@ leftMenu =
 
 type Msg
     = Change String
+    | ClickMsg
+    | ChangePassword String
     | Toggle
 
 
 defaultCheckbox : Bool -> Element msg
 defaultCheckbox checked =
     Element.el
-        [ --Internal.htmlClass "focusable"
-          Element.width
+        [ Element.htmlAttribute <| HA.class "focusable"
+        , Element.width
             (Element.px 14)
         , Element.height (Element.px 14)
         , Font.color white
@@ -228,6 +240,61 @@ myTooltip str =
         (text str)
 
 
+blue =
+    Element.rgb255 238 238 238
+
+
+purple =
+    Element.rgb255 238 238 23
+
+
+myButton =
+    Input.button
+        [ Background.color <| Element.rgb255 254 248 250
+
+        {--
+        , Background.gradient
+            { angle = 0
+            , steps = [ Element.rgba255 255 255 255 1.0, Element.rgba255 255 255 255 0.8 ]
+            }
+        --}
+        {- }, Border.innerShadow
+               { blur = 0
+               , color = Element.rgba255 16 22 26 0.2
+               , offset = ( 0, 0 )
+               , size = 1
+               }
+           , Border.innerShadow
+               { blur = 0
+               , color = Element.rgba255 16 22 26 0.1
+               , offset = ( 0, -1 )
+               , size = 0
+               }
+        -}
+        , style "background-image" "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))"
+        , style "box-shadow" "inset 0 0 0 1px rgba(16,22,26,.2),inset 0 -1px 0 rgba(16,22,26,.1)"
+        , Border.rounded 3
+        , paddingXY 5 10
+        , Font.size 14
+        , Font.family
+            [ Font.typeface "-apple-system"
+            , Font.typeface "Segoe UI"
+            , Font.typeface "Roboto"
+            , Font.sansSerif
+            ]
+        , mouseDown [ Background.gradient { angle = 0, steps = [ Element.rgb255 216 225 232 ] } ]
+        , mouseOver [ Background.color <| Element.rgb255 235 241 245 ]
+
+        --, mouseDown [ Background.color <| Element.rgb255 216 225 232 ]
+        {--, Element.focused
+            [ Background.color <| Element.rgb255 235 241 245 ]
+        --}
+        ]
+        { onPress = Just ClickMsg
+        , label = text "Click to wiggle"
+        }
+
+
 pageContent model =
     column
         [ width fill
@@ -244,9 +311,19 @@ pageContent model =
                             (Input.placeholder []
                                 (text "type some text here and press enter")
                             )
-                    , label = Input.labelAbove [] (text "Hello")
+                    , label = Input.labelAbove [] (text "Username")
                     }
                 ]
+            , Input.text []
+                { onChange = ChangePassword
+                , text = "Password"
+                , placeholder =
+                    Just
+                        (Input.placeholder []
+                            (text "type some text here and press enter")
+                        )
+                , label = Input.labelAbove [] (text "Password")
+                }
             , Input.checkbox [] <|
                 { onChange = always Toggle
                 , label = Input.labelHidden "Activer/Désactiver le partage"
@@ -260,6 +337,7 @@ pageContent model =
                         , toggleHeight = 28
                         }
                 }
+            , myButton
             , defaultCheckbox True
             , el [ tooltip above (myTooltip "foo") ] (text "foo")
             , el [ tooltip below (myTooltip "bar") ] (text "bar")
