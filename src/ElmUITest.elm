@@ -251,13 +251,11 @@ purple =
 myButton =
     Input.button
         [ Background.color <| Element.rgb255 254 248 250
-
-        {--
         , Background.gradient
             { angle = 0
-            , steps = [ Element.rgba255 255 255 255 1.0, Element.rgba255 255 255 255 0.8 ]
+            , steps = [ Element.rgba255 255 255 255 0, Element.rgba255 255 255 255 0.8 ]
             }
-        --}
+
         {- }, Border.innerShadow
                { blur = 0
                , color = Element.rgba255 16 22 26 0.2
@@ -271,7 +269,7 @@ myButton =
                , size = 0
                }
         -}
-        , style "background-image" "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))"
+        --, style "background-image" "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))"
         , style "box-shadow" "inset 0 0 0 1px rgba(16,22,26,.2),inset 0 -1px 0 rgba(16,22,26,.1)"
         , Border.rounded 3
         , paddingXY 5 10
