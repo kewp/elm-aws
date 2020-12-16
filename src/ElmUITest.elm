@@ -292,6 +292,9 @@ myButton label =
         --, style "background-image" "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))"
         , style "box-shadow" "inset 0 0 0 1px rgba(16,22,26,.2),inset 0 -1px 0 rgba(16,22,26,.1)"
         , Border.rounded 3
+        , width <| px 150
+        , height <| px 40
+        , centerX
         , paddingXY 10 10
         , Font.size 14
         , Font.family
@@ -373,25 +376,20 @@ pageContent model =
                                 { url = "/forgot", label = text "Forgot password" }
                             ]
                 }
-            , row [ alignRight ]
-                [ Input.checkbox [] <|
-                    { onChange = always ToggleRememberMe
-                    , label = Input.labelRight [] <| el [ Font.size 15 ] (text "Remember me")
-                    , checked = model.rememberMe
-                    , icon =
-                        toggleCheckboxWidget
-                            { offColor = lightGrey
-                            , onColor = green
-                            , sliderColor = white
-                            , toggleWidth = 40
-                            , toggleHeight = 20
-                            }
-                    }
-                , myButton "Login"
-                ]
-            , defaultCheckbox True
-            , el [ tooltip above (myTooltip "foo") ] (text "foo")
-            , el [ tooltip below (myTooltip "bar") ] (text "bar")
+            , Input.checkbox [] <|
+                { onChange = always ToggleRememberMe
+                , label = Input.labelRight [] <| el [ Font.size 15 ] (text "Remember me")
+                , checked = model.rememberMe
+                , icon =
+                    toggleCheckboxWidget
+                        { offColor = lightGrey
+                        , onColor = green
+                        , sliderColor = white
+                        , toggleWidth = 40
+                        , toggleHeight = 20
+                        }
+                }
+            , myButton "Login"
             ]
         ]
 
