@@ -7,11 +7,13 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
+import Html as Html
 import Html.Attributes as HA
+import String exposing (right)
 
 
 type alias Model =
-    { toggle : Bool }
+    { username : String, password : String, rememberMe : Bool }
 
 
 style name value =
@@ -20,23 +22,23 @@ style name value =
 
 initialModel : Model
 initialModel =
-    { toggle = False }
+    { username = "", password = "", rememberMe = False }
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        ChangePassword _ ->
+        ChangePassword pass ->
+            { model | password = pass }
+
+        ChangeUsername user ->
+            { model | username = user }
+
+        ClickLogin ->
             model
 
-        Change _ ->
-            model
-
-        ClickMsg ->
-            model
-
-        Toggle ->
-            { model | toggle = not model.toggle }
+        ToggleRememberMe ->
+            { model | rememberMe = not model.rememberMe }
 
 
 renderTitle =
@@ -93,10 +95,10 @@ leftMenu =
 
 
 type Msg
-    = Change String
-    | ClickMsg
+    = ChangeUsername String
+    | ClickLogin
     | ChangePassword String
-    | Toggle
+    | ToggleRememberMe
 
 
 defaultCheckbox : Bool -> Element msg
@@ -248,7 +250,23 @@ purple =
     Element.rgb255 238 238 23
 
 
-myButton =
+{-| This is the same as Element.text but it preserves line breaks, tabs, and extra whitespace.
+This isn't exposed because if you forget to place it in a paragraph, it will have weird behavior (for example, it will ignore column spacing and the line spacing will be too small).
+It's best to just us `textParagraph`.
+-}
+text : String -> Element msg
+text text_ =
+    Element.html <| Html.span [ HA.style "white-space" "pre-wrap" ] [ Html.text text_ ]
+
+
+{-| Create a paragraph from a single string. This also preserves line breaks, tabs, and extra white space within the string.
+-}
+textParagraph : List (Element.Attribute msg) -> String -> Element msg
+textParagraph attributes text_ =
+    Element.paragraph attributes [ text text_ ]
+
+
+myButton label =
     Input.button
         [ Background.color <| Element.rgb255 254 248 250
         , Background.gradient
@@ -272,7 +290,7 @@ myButton =
         --, style "background-image" "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))"
         , style "box-shadow" "inset 0 0 0 1px rgba(16,22,26,.2),inset 0 -1px 0 rgba(16,22,26,.1)"
         , Border.rounded 3
-        , paddingXY 5 10
+        , paddingXY 10 10
         , Font.size 14
         , Font.family
             [ Font.typeface "-apple-system"
@@ -288,8 +306,8 @@ myButton =
             [ Background.color <| Element.rgb255 235 241 245 ]
         --}
         ]
-        { onPress = Just ClickMsg
-        , label = text "Click to wiggle"
+        { onPress = Just ClickLogin
+        , label = text label
         }
 
 
@@ -302,40 +320,42 @@ pageContent model =
             [ paragraph [] [ el [] (text "Latest stuff lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum....") ]
             , paragraph []
                 [ Input.text []
-                    { onChange = Change
-                    , text = "hello"
+                    { onChange = ChangeUsername
+                    , text = model.username
                     , placeholder =
                         Just
                             (Input.placeholder []
-                                (text "type some text here and press enter")
+                                (text "user@email.com")
                             )
                     , label = Input.labelAbove [] (text "Username")
                     }
                 ]
             , Input.text []
                 { onChange = ChangePassword
-                , text = "Password"
+                , text = model.password
                 , placeholder =
                     Just
                         (Input.placeholder []
-                            (text "type some text here and press enter")
+                            (text "enter password")
                         )
                 , label = Input.labelAbove [] (text "Password")
                 }
-            , Input.checkbox [] <|
-                { onChange = always Toggle
-                , label = Input.labelHidden "Activer/Désactiver le partage"
-                , checked = model.toggle
-                , icon =
-                    toggleCheckboxWidget
-                        { offColor = lightGrey
-                        , onColor = green
-                        , sliderColor = white
-                        , toggleWidth = 60
-                        , toggleHeight = 28
-                        }
-                }
-            , myButton
+            , row [ alignRight ]
+                [ Input.checkbox [] <|
+                    { onChange = always ToggleRememberMe
+                    , label = Input.labelRight [] <| text "Remember me"
+                    , checked = model.rememberMe
+                    , icon =
+                        toggleCheckboxWidget
+                            { offColor = lightGrey
+                            , onColor = green
+                            , sliderColor = white
+                            , toggleWidth = 60
+                            , toggleHeight = 28
+                            }
+                    }
+                , myButton "Login"
+                ]
             , defaultCheckbox True
             , el [ tooltip above (myTooltip "foo") ] (text "foo")
             , el [ tooltip below (myTooltip "bar") ] (text "bar")
