@@ -52,7 +52,7 @@ renderTitle =
         , Border.color <| Element.rgb 120 120 120
         , Border.shadow { color = Element.rgba 0 0 0 0.5, offset = ( 0, 0 ), blur = 5, size = 5 }
         ]
-        [ text "Title" ]
+        [ text "Elm AWS" ]
 
 
 renderPage model =
@@ -254,13 +254,15 @@ purple =
 This isn't exposed because if you forget to place it in a paragraph, it will have weird behavior (for example, it will ignore column spacing and the line spacing will be too small).
 It's best to just us `textParagraph`.
 -}
-text : String -> Element msg
-text text_ =
-    Element.html <| Html.span [ HA.style "white-space" "pre-wrap" ] [ Html.text text_ ]
 
 
-{-| Create a paragraph from a single string. This also preserves line breaks, tabs, and extra white space within the string.
--}
+
+--text : String -> Element msg
+--text text_ =
+--   Element.html <| Html.span [ HA.style "white-space" "pre-wrap" ] [ Html.text text_ ]
+--| Create a paragraph from a single string. This also preserves line breaks, tabs, and extra white space within the string.--}
+
+
 textParagraph : List (Element.Attribute msg) -> String -> Element msg
 textParagraph attributes text_ =
     Element.paragraph attributes [ text text_ ]
@@ -316,8 +318,20 @@ pageContent model =
         [ width fill
         , height fill
         ]
-        [ column [ centerX, centerY ]
-            [ paragraph [] [ el [] (text "Latest stuff lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum....") ]
+        [ column
+            [ centerX
+            , centerY
+            , spacing 30
+            , padding 30
+            , Border.rounded 3
+            , Border.shadow
+                { blur = 5
+                , color = Element.rgba255 16 22 26 0.2
+                , offset = ( 0, 0 )
+                , size = 1
+                }
+            ]
+            [ paragraph [] [ el [ Font.size 30 ] (text "Login") ]
             , paragraph []
                 [ Input.text []
                     { onChange = ChangeUsername
@@ -327,7 +341,7 @@ pageContent model =
                             (Input.placeholder []
                                 (text "user@email.com")
                             )
-                    , label = Input.labelAbove [] (text "Username")
+                    , label = Input.labelAbove [ Font.size 16 ] (text "Username")
                     }
                 ]
             , Input.text []
@@ -338,20 +352,39 @@ pageContent model =
                         (Input.placeholder []
                             (text "enter password")
                         )
-                , label = Input.labelAbove [] (text "Password")
+
+                --, label = Input.labelHidden "Password"
+                , label =
+                    Input.labelAbove [ Font.size 16, width fill ] <|
+                        row [ width fill ]
+                            [ text "Password"
+                            , link
+                                [ alignRight
+                                , Font.color <| rgb 0 0 255
+                                , Border.color <| rgba255 255 255 255 255
+                                , Border.widthEach
+                                    { bottom = 1
+                                    , left = 0
+                                    , top = 0
+                                    , right = 0
+                                    }
+                                , mouseOver [ Border.color <| rgb255 0 0 200 ]
+                                ]
+                                { url = "/forgot", label = text "Forgot password" }
+                            ]
                 }
             , row [ alignRight ]
                 [ Input.checkbox [] <|
                     { onChange = always ToggleRememberMe
-                    , label = Input.labelRight [] <| text "Remember me"
+                    , label = Input.labelRight [] <| el [ Font.size 15 ] (text "Remember me")
                     , checked = model.rememberMe
                     , icon =
                         toggleCheckboxWidget
                             { offColor = lightGrey
                             , onColor = green
                             , sliderColor = white
-                            , toggleWidth = 60
-                            , toggleHeight = 28
+                            , toggleWidth = 40
+                            , toggleHeight = 20
                             }
                     }
                 , myButton "Login"
@@ -380,7 +413,17 @@ tooltip usher tooltip_ =
 
 view model =
     layout [] <|
-        column [ height fill, width fill, spacing 20 ]
+        column
+            [ height fill
+            , width fill
+            , spacing 20
+            , Font.family
+                [ Font.typeface "-apple-system"
+                , Font.typeface "Segoe UI"
+                , Font.typeface "Roboto"
+                , Font.sansSerif
+                ]
+            ]
             [ renderTitle
             , renderPage model
             ]
