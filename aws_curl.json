@@ -1,6 +1,6 @@
 {
     "AuthParameters" : {
-        "USERNAME" : "karl",
+        "USERNAME" : "jenny",
         "PASSWORD" : "password"
     },
     "AuthFlow" : "USER_PASSWORD_AUTH",

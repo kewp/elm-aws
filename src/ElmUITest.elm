@@ -63,7 +63,7 @@ renderPage model =
         , explain Debug.todo
         ]
         [ leftMenu
-        , pageContent model
+        , loginPage model
         ]
 
 
@@ -316,7 +316,7 @@ myButton label =
         }
 
 
-pageContent model =
+loginPage model =
     column
         [ width fill
         , height fill
@@ -327,6 +327,20 @@ pageContent model =
             , spacing 30
             , padding 30
             , Border.rounded 3
+            , Background.gradient
+                { angle = Basics.pi / 4
+                , steps =
+                    [ Element.rgba255 150
+                        255
+                        255
+                        0.2
+                    , Element.rgba255
+                        255
+                        255
+                        255
+                        0.8
+                    ]
+                }
             , Border.shadow
                 { blur = 5
                 , color = Element.rgba255 16 22 26 0.2

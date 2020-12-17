@@ -1,0 +1,1 @@
+https://elm-app.auth.us-east-1.amazoncognito.com/oauth2/authorize?response_type=code&client_id=299rmbbc4kld504kkqc329fnek&state=STATE&scope=openid+profile+aws.cognito.signin.user.admin&redirect_uri=https://myapp.com
