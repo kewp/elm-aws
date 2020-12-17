@@ -9,36 +9,88 @@ import Element.Input as Input
 import Element.Region as Region
 import Html as Html
 import Html.Attributes as HA
-import String exposing (right)
+import Http
+
+
+type GetLogin
+    = NotStarted
+    | Failure String
+    | Loading
+    | Success String
+
+
+type Msg
+    = ChangeUsername String
+    | ClickLogin
+    | GotLogin (Result Http.Error String)
+    | ChangePassword String
+    | ToggleRememberMe
 
 
 type alias Model =
-    { username : String, password : String, rememberMe : Bool }
+    { username : String, password : String, rememberMe : Bool, status : GetLogin }
 
 
 style name value =
     Element.htmlAttribute <| HA.style name value
 
 
-initialModel : Model
-initialModel =
-    { username = "", password = "", rememberMe = False }
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { username = "", password = "", rememberMe = False, status = NotStarted }, Cmd.none )
 
 
-update : Msg -> Model -> Model
+getErrorString : Http.Error -> String
+getErrorString err =
+    case err of
+        Http.BadUrl string ->
+            "Bad url"
+
+        Http.Timeout ->
+            "Timeout"
+
+        Http.NetworkError ->
+            "Network error"
+
+        Http.BadStatus int ->
+            "Bad status"
+
+        Http.BadBody string ->
+            "Bad body"
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangePassword pass ->
-            { model | password = pass }
+            ( { model | password = pass }, Cmd.none )
 
         ChangeUsername user ->
-            { model | username = user }
+            ( { model | username = user }, Cmd.none )
 
         ClickLogin ->
-            model
+            ( { model | status = Loading }
+            , Http.request
+                { method = "Get"
+                , headers = []
+                , url = "https://github.com"
+                , body = Http.emptyBody
+                , expect = Http.expectString GotLogin
+                , timeout = Just 2000.0
+                , tracker = Nothing
+                }
+            )
+
+        GotLogin result ->
+            case result of
+                Ok fullText ->
+                    ( { model | status = Success fullText }, Cmd.none )
+
+                Err err ->
+                    ( { model | status = Failure (getErrorString err) }, Cmd.none )
 
         ToggleRememberMe ->
-            { model | rememberMe = not model.rememberMe }
+            ( { model | rememberMe = not model.rememberMe }, Cmd.none )
 
 
 renderTitle =
@@ -92,13 +144,6 @@ leftMenu =
             , text "About"
             ]
         ]
-
-
-type Msg
-    = ChangeUsername String
-    | ClickLogin
-    | ChangePassword String
-    | ToggleRememberMe
 
 
 defaultCheckbox : Bool -> Element msg
@@ -403,6 +448,18 @@ loginPage model =
                         , toggleHeight = 20
                         }
                 }
+            , case model.status of
+                NotStarted ->
+                    Element.none
+
+                Failure str ->
+                    el [] (text str)
+
+                Loading ->
+                    el [] (text "Loading")
+
+                Success str ->
+                    el [] (text str)
             , myButton "Login"
             ]
         ]
@@ -441,10 +498,16 @@ view model =
             ]
 
 
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
 main : Program () Model Msg
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.element
+        { init = init
         , view = view
         , update = update
+        , subscriptions = subscriptions
         }
