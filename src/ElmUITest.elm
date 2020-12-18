@@ -44,19 +44,19 @@ getErrorString : Http.Error -> String
 getErrorString err =
     case err of
         Http.BadUrl string ->
-            "Bad url"
+            "Unexpected error (bad url). Please contact your sys admin."
 
         Http.Timeout ->
-            "Timeout"
+            "Network timeout. Please try again."
 
         Http.NetworkError ->
-            "Network error"
+            "Network error. Please check your internet connection"
 
         Http.BadStatus int ->
-            "Bad status"
+            "Unexpected error (code " ++ String.fromInt int ++ "). Please contact your sys admin."
 
         Http.BadBody string ->
-            "Bad body"
+            "Unexpected error (bad body). Please contact your sys admin."
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -73,7 +73,7 @@ update msg model =
             , Http.request
                 { method = "Get"
                 , headers = []
-                , url = "https://github.com"
+                , url = "https://cognito-idp.us-east-1.amazonaws.com"
                 , body = Http.emptyBody
                 , expect = Http.expectString GotLogin
                 , timeout = Just 2000.0
@@ -369,6 +369,7 @@ loginPage model =
         [ column
             [ centerX
             , centerY
+            , width <| px 350
             , spacing 30
             , padding 30
             , Border.rounded 3
@@ -394,18 +395,16 @@ loginPage model =
                 }
             ]
             [ paragraph [] [ el [ Font.size 30 ] (text "Login") ]
-            , paragraph []
-                [ Input.text []
-                    { onChange = ChangeUsername
-                    , text = model.username
-                    , placeholder =
-                        Just
-                            (Input.placeholder []
-                                (text "user@email.com")
-                            )
-                    , label = Input.labelAbove [ Font.size 16 ] (text "Username")
-                    }
-                ]
+            , Input.text []
+                { onChange = ChangeUsername
+                , text = model.username
+                , placeholder =
+                    Just
+                        (Input.placeholder []
+                            (text "user@email.com")
+                        )
+                , label = Input.labelAbove [ Font.size 16 ] (text "Username")
+                }
             , Input.text []
                 { onChange = ChangePassword
                 , text = model.password
@@ -453,10 +452,10 @@ loginPage model =
                     Element.none
 
                 Failure str ->
-                    el [] (text str)
+                    paragraph [ Font.size 15, Font.color <| rgb255 255 0 0 ] [ text str ]
 
                 Loading ->
-                    el [] (text "Loading")
+                    paragraph [ width fill ] [ text "Loading" ]
 
                 Success str ->
                     el [] (text str)
